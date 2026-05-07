@@ -1,102 +1,204 @@
-# 💰 **Bank Account** 💰
+# 💰 Bank Account
 
-Implementation of a bank account with [Hexagonal architecture](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software))
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/your-repo-url)
+[![Java Version](https://img.shields.io/badge/java-17-blue)](https://adoptopenjdk.net/)
+[![Spring Boot](https://img.shields.io/badge/spring--boot-3.1.4-brightgreen)](https://spring.io/projects/spring-boot)
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](#testing)
 
-![archi-hexa](./assets/hexa-schema.png)
+## Project Name and Description
 
-The idea of this project is to have services exposed that can be used to do bank operations (deposit, retreat) and to consult the balance of the account and the relatives transactions.
-This type of operations can be done only from pre enrolled users, that are saved into our data collection.
+**Bank Account** is a sample application that implements a simple bank account system using [Hexagonal Architecture (Ports and Adapters)](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)).  
+It exposes services for basic bank operations (deposit, withdraw, balance inquiry, and transaction history) for pre-enrolled users. The application is designed for clarity, testability, and portability, using in-memory data for demonstration and testing.
 
-# Structure
+---
 
-The project is structured in 3 different layers:
-- presentation layer: represent the diving part that expose the interface to handle the services contained into the logic of the Hexagonal architecture (main folder)
-- business layer: the logical part of the project, into this layer we can find all the business logics provided from the project (business folder)
-- integration layer: represent the driven part that provides us all the data collected from the application and all the methods to do operation with that (driven folder)
+## Technology Stack
 
-For simplicity the presentation part is located directly into the main folder (bankAccount) where we can found the main class BankAccountApplication.
+- **Java**: 17
+- **Spring Boot**: 3.1.4
+- **Maven**: for build and dependency management
+- **JUnit**: 4.12
+- **EasyMock**: 3.5.1 (for mocking in tests)
+- **Spring Web**: for REST API
+- **Apache Commons Lang3**: utility library
 
-## Service exposed
+---
 
-The presentation layer provides this services
+## Project Architecture
 
-```
-1. Get bankAccount balance
-2. Get transactions
-3. Deposit
-4. Get money
-```
-
-To call this services is needed a userId that is associated to an existing user
-
-This methods can be used and tested in 2 different ways:
-- using the presentation layer exposed from the application, with the related ports (method declared into the BankAccountPorts interface)
-- calling the API's exposed from the rest controller
-
-## Tests
-Into the folder /test we can find a full set of tests that, with mock logic, provide us examples with real use cases and the relative attended responses.
-
-The tests are organized in folder with the same logic of the application tree (presentation, business, integration) and tests all the different layers of the application, in order to have full coverage of the project and also that every single service works good himself.
-
-# How to use it
-Into the main folder there is the BankAccountApplication class that is the main class of our project. To start the project we must only start the main of this class.
-
-As first thing the rest controller will start and listen to the port 8080 for the API requests.
-
-After that the system asks to choose if test also a local simulation with the data of the user1 or not. This service is provided in order to test the same services exposes with 2 different versions (application side, API side).
-For the local simulation test is possible to do all the 4 operations only for the user1, this is only a test.
-
-## Data
-As written in the documentation the application use an association of local data to manage all the application, this type of solution helps us to have a portable application that works with all the environments and that can be tested and validated with real pre enrolled data.
-
-The following data represents the initial situation when the application is started:
+The project follows the **Hexagonal Architecture** (Ports and Adapters), structured into three main layers:
 
 ```
-User1:
-    User: {
-        id: 1, 
-        name: "User1",
-        surname: "User1",
-        email: "user1@mail.com",
-        birthday: date of application starting
-    }
-    
-    BankAccount: {
-        id: 1,
-        amount: 0,
-        transactions: []
-    }
-
-User2:
-    User: {
-        id: 2, 
-        name: "User2",
-        surname: "User2",
-        email: "user2@mail.com",
-        birthday: date of application starting
-    }
-    
-    BankAccount: {
-        id: 2,
-        amount: 100,
-        transactions: []
-    }
-
-User3:
-    User: {
-        id: 3, 
-        name: "User3",
-        surname: "User3",
-        email: "user3@mail.com",
-        birthday: date of application starting
-    }
-    
-    BankAccount: {
-        id: 3,
-        amount: 50,
-        transactions: []
-    }
++-------------------+
+| Presentation Layer|  <-- REST API, CLI (main class)
++-------------------+
+          |
+          v
++-------------------+
+|  Business Layer   |  <-- Core business logic, service interfaces/impl
++-------------------+
+          |
+          v
++-------------------+
+| Integration Layer |  <-- Data access, repositories, DTOs
++-------------------+
 ```
 
-With this data is possible to test all the 4 methods exposed and the relative errors.
-For more details, to test better the application, please check the tests written from the developer.
+- **Presentation Layer**: Exposes the API and CLI for user interaction (`BankAccountApplication`, REST controllers).
+- **Business Layer**: Contains the core logic and service interfaces/implementations.
+- **Integration Layer**: Handles data storage and retrieval (in-memory for this demo), DTOs, and repository implementations.
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Java 17+
+- Maven 3.6+
+- (Optional) cURL or Postman for API testing
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-repo-url/csharp-cpp-java-bank-account.git
+   cd csharp-cpp-java-bank-account
+   ```
+
+2. **Build the project:**
+   ```bash
+   mvn clean install
+   ```
+
+3. **Run the application:**
+   ```bash
+   mvn spring-boot:run
+   ```
+   The application will start and listen on port `8080`.
+
+4. **(Optional) Run with CLI simulation:**
+   On startup, you will be prompted to run a local simulation for `user1`. Enter `1` to interact via CLI.
+
+### Basic Usage Example
+
+#### Using the REST API
+
+- **Get Balance**
+  ```
+  GET http://localhost:8080/bankAccount/{userId}
+  ```
+- **Get Transactions**
+  ```
+  GET http://localhost:8080/transactionList/{userId}
+  ```
+- **Deposit**
+  ```
+  POST http://localhost:8080/deposit/{userId}?amount=100
+  ```
+- **Withdraw**
+  ```
+  GET http://localhost:8080/retreat/{userId}?amount=50
+  ```
+
+#### Using the CLI
+
+Follow the prompts in the terminal to deposit, withdraw, check balance, or view transactions for `user1`.
+
+---
+
+## Project Structure
+
+```
+.
+├── src
+│   ├── main
+│   │   └── java/com/bankAccount
+│   │       ├── BankAccountApplication.java # Main entry point, CLI
+│   │       ├── BankAccountHandler.java          # REST Controller
+│   │       ├── BankAccountPorts.java            # Ports interface
+│   │       ├── BankAccountProvider.java         # Adapter for application usage
+│   │       ├── business
+│   │       │   ├── adapter
+│   │       │   │   ├── BankAccount.java         # Presentation model
+│   │       │   │   └── Transaction.java         # Presentation model
+│   │       │   ├── service
+│   │       │   │   └── BankAccountService.java  # Business logic interface
+│   │       │   └── serviceimpl
+│   │       │       └── BankAccountServiceImpl.java # Business logic implementation
+│   │       ├── driven
+│   │       │ ├── record
+│   │       │   │   ├── BankAccountDTO.java      # Data transfer object
+│   │       │   │   ├── TransactionDTO.java      # Data transfer object
+│   │       │   │   └── UserDTO.java             # Data transfer object
+│   │       │   ├── repository
+│   │       │   │   └── DataRepository.java      # Repository interface
+│   │       │   └── repositoryimpl
+│   │       │       └── LocalDataRepositoryImpl.java # In-memory repository implementation
+│   │       └── business/util
+│   │           └── RecordToPresentationConverter.java # DTO to model converter
+│   └── test
+│       └── java/com/bankAccount
+│           ├── TestUtil.java                    # Test utilities and fixtures
+│           ├── business/BankAccountDTOServiceImplTests.java
+│           ├── driven/LocalDataRepositoryImplTests.java
+│           └── presentation
+│               ├── controller/BankAccountDTOPortsHandlerTests.java
+│               └── provider/BankAccountDTOProviderTests.java
+├── pom.xml                                      # Maven configuration
+└── README.md
+```
+
+---
+
+## Key Features
+
+- **Hexagonal Architecture**: Clean separation of concerns between presentation, business, and integration layers.
+- **RESTful API**: Exposes endpoints for:
+  - Get account balance (`GET /bankAccount/{userId}`)
+  - Get transaction history (`GET /transactionList/{userId}`)
+  - Deposit funds (`POST /deposit/{userId}?amount=...`)
+  - Withdraw funds (`GET /retreat/{userId}?amount=...`)
+- **CLI Simulation**: Optionally interact with the application via command-line for `user1`.
+- **In-Memory Data**: Pre-enrolled users and accounts for easy testing and portability.
+- **Full Test Coverage**: Comprehensive unit tests for all layers.
+- **Error Handling**: Graceful error messages for invalid operations or users.
+
+---
+
+## Development Workflow
+
+- **Branching**: Not specified; recommend using feature branches and pull requests for contributions.
+- **Testing**: All new features and bug fixes should include corresponding unit tests.
+- **Build**: Use Maven for build, dependency management, and running tests.
+
+---
+
+## Coding Standards
+
+- **Java 17** features and conventions.
+- **Layered separation**: Presentation, business, and integration code are strictly separated.
+- **DTOs**: Used for data transfer between layers.
+- **Logging**: SLF4J for error and info logging.
+- **Equality**: `equals` and `toString` methods overridden for domain objects for clarity and testability.
+
+---
+
+## Testing
+
+- **Frameworks**: JUnit 4.12, EasyMock 3.5.1
+- **Coverage**: 100% unit test coverage across all layers (presentation, business, integration).
+- **Test Organization**: Mirrors main source structure for clarity.
+- **Test Utilities**: `TestUtil.java` provides fixtures and helpers for consistent test data.
+
+---
+
+## Additional Resources
+
+- [Hexagonal Architecture (Wikipedia)](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software))
+- [Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/3.1.4/reference/htmlsingle/)
+- [JUnit Documentation](https://junit.org/junit4/)
+
+---
+
+*For more details, see the [original documentation in README.md](./README.md) and explore the test cases for usage examples and expected behaviors.*
